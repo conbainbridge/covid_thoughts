@@ -97,9 +97,12 @@ winter_f_pcaModel = prcomp(scale(winter_f_pcaData))
 summary(winter_f_pcaModel)
 
 ### Fig. 1, cumulative variance for PCs
+png("fig1.png", units="px", width=7000, height=6125, res=1000) # Then converted to 300 dpi in Adobe Photoshop
+fig1_title = strwrap("Cumulative variance explained for 91 total Principal Component", width = 40)
 plot(cumsum(winter_f_pcaModel$sdev^2)/sum(winter_f_pcaModel$sdev^2),ylim=c(0,1), ylab="Cumulative proportion", xlab="Principal Component", main="Cumulative variance explained for 91 total Principal Components")
 abline(v=20,col="blue") 
 abline(h=0.69368,col="darkgreen") # Cumulative prop. variance including up to PC20
+dev.off()
 
 dim(winter_f_pcaModel$x)
 
@@ -195,6 +198,7 @@ winter_f_PCA_top = rbind(winter_f_PCA_top1, winter_f_PCA_top4, winter_f_PCA_top5
 winter_f_PCA_top
 
 # Fig. 2 - PC5 violin plot
+png("fig2.png", units="px", width=6125, height=7000, res=1000) # Then converted to 300 dpi in Adobe Photoshop
 violin_PC5 <- ggplot(winter22_f_data, aes(x=condition=='PrFP', y=winter_f_pcaModel$x[,5], fill=condition)) +
   geom_violin() +
   geom_boxplot(width=0.1) +
@@ -205,6 +209,7 @@ violin_PC5 <- ggplot(winter22_f_data, aes(x=condition=='PrFP', y=winter_f_pcaMod
   theme(legend.position = "none", text = element_text(size = 16), axis.text = element_text(size = 16)) +
   scale_fill_manual(values=c("#bf615e", "#5ca84f"))
 violin_PC5 # p = 0.011
+dev.off()
 
 # Look at other PCs in violin plots - slot in selected component values to build each. 4 is the only other one with a significant difference between violins. For reference, full list of selected components: 1, 4, 5, 10, 11, 13, 18
 violin_PC4 <- ggplot(winter22_f_data, aes(x=condition=='PrFP', y=winter_f_pcaModel$x[,4], fill=condition)) +
@@ -235,15 +240,18 @@ g = graph_from_adjacency_matrix(theDists<.15,mode="undirected")
 g = simplify(g)
 length(V(g))
 length(E(g))
-l = layout_with_kk(g)
+set.seed(42)
+l = layout_with_fr(g)
 V(g)$size = .1
 mxScale = (presentScore-min(presentScore))/(max(presentScore)-min(presentScore))
 V(g)$label.color = rgb(1-mxScale,0,0)
 
 ### Fig. 3 - LIWC network
-plot(g, layout=l, vertex.label.cex=1.7, edge.width=3) # Sizing is for ~1211 x 988px for exporting figure
+png("fig3.png", units="px", width=5299, height=4323, res=700) # Then converted to 300 dpi and white space trimmed using Adobe Photoshop
+plot(g, layout=l, vertex.label.cex=1, edge.width=3) # Sizing is for ~1211 x 988px for exporting figure
+dev.off()
 
-hist(degree(g))
+ hist(degree(g))
 V(g)$name[order(degree(g),decreasing=T)][1:10]
 
 ### Network stats
