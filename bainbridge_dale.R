@@ -233,7 +233,7 @@ summary(lm(winter22_f_data$focusfuture~winter22_f_data$condition=='PrFP'))
 ### Network code ###
 ####################
 topScoring = order(rowSums(abs(winter_f_pcaModel$rotation[,selectedComponents])),decreasing=T)[1:50]
-presentScore = rowSums(winter_f_pcaModel$rotation[topScoring,selectedComponents])+abs(min(topScoring))
+presentScore = rowSums(abs(winter_f_pcaModel$rotation[topScoring,selectedComponents]))
 theDists = as.matrix(dist(winter_f_pcaModel$rotation[topScoring,selectedComponents],method='maximum'))
 hist(theDists,100)
 g = graph_from_adjacency_matrix(theDists<.15,mode="undirected")
@@ -244,14 +244,14 @@ set.seed(42)
 l = layout_with_fr(g)
 V(g)$size = .1
 mxScale = (presentScore-min(presentScore))/(max(presentScore)-min(presentScore))
-V(g)$label.color = rgb(1-mxScale,0,0)
+V(g)$label.color = rgb(mxScale,0,mxScale)
 
 ### Fig. 3 - LIWC network
 png("fig3.png", units="px", width=5299, height=4323, res=700) # Then converted to 300 dpi and white space trimmed using Adobe Photoshop
 plot(g, layout=l, vertex.label.cex=1, edge.width=3) # Sizing is for ~1211 x 988px for exporting figure
 dev.off()
 
- hist(degree(g))
+hist(degree(g))
 V(g)$name[order(degree(g),decreasing=T)][1:10]
 
 ### Network stats
